@@ -1,0 +1,4 @@
+.idea/
+yelp_businesses.csv.gz
+yelp_top_reviewers_with_reviews.csv.gz
+yelp_top_users_friendship_graph.csv.gz
