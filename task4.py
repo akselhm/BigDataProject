@@ -23,5 +23,16 @@ top_ten_out = most_out.topByKey(10)
 
 # b) TODO: find mean and median of users in and out
 
+# FIND MEAN
+
+avg_in = float(users_lines_rdd.count())/most_in.count()
+avg_out = float(users_lines_rdd.count())/most_out.count()
+
+# FIND MEDIAN
+
+
+
+
+
 
 
