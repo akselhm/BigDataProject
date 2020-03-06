@@ -39,10 +39,17 @@ top_ten_reviews = most_reviews.takeOrdered(10, key=lambda x: -x[1])
 # ==============================================
 per_year = reviewers_lines_rdd.map(lambda year: (datetime.datetime.fromtimestamp(float(year[4])).year, 1)).reduceByKey(add).sortByKey()
 
-"""
-# TODO: e)
+
+#  e)
 # ==============================================
 
+first_date = reviewers_lines_rdd.map(lambda time: time[4]).reduce(lambda date1, date2: date1 if date1 < date2 else date2)
+fd = datetime.datetime.fromtimestamp(float(first_date))
+
+last_date = reviewers_lines_rdd.map(lambda time: time[4]).reduce(lambda date1, date2: date1 if date1 > date2 else date2)
+ld = datetime.datetime.fromtimestamp(float(last_date))
+
+"""
 # f) PCC
 # ==============================================
 
