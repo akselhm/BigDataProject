@@ -29,6 +29,7 @@ characters_and_reviews_count = reviewers_lines_rdd.map(lambda fields: (len(base6
     lambda (chars_1, reviews_1), (chars_2, reviews_2): (chars_1 + chars_2, reviews_1 + reviews_2))
 average_characters_per_review = characters_and_reviews_count[0] / characters_and_reviews_count[1]
 
+print average_characters_per_review
 # c) Businesses with the most number of reviews
 # ==============================================
 most_reviews = reviewers_lines_rdd.map(lambda node: (node[2], 1)).reduceByKey(add)
