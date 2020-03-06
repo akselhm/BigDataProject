@@ -1,38 +1,44 @@
 from pyspark import SparkContext, SparkConf
+from operator import add
+import numpy as np
+import unicodedata
 
+# Configure Spark
 sparkConf = SparkConf().setAppName("Yelp").setMaster("local")
-sc = SparkContext(conf = sparkConf)
+sc = SparkContext(conf=sparkConf)
 
+# Set data folder, inputs and output
 folder_name = "./data/"
 input_users = "yelp_top_users_friendship_graph.csv.gz"
 output_file_name = "result_1.tsv"
 
-usersRDD = sc.textFile(folder_name + input_users)
-users_lines_rdd = usersRDD.map(lambda line: line.split('\t'))
+# Create RDD object from .gz-file
+rdd = sc.textFile(folder_name + input_users)
+rdd = rdd.map(lambda line: line.split(','))
 
+# Filter out header
+header = rdd.first()
+rdd = rdd.filter(lambda line: line != header)
 
 # a)
+# ==============================================
+followers = rdd.map(lambda node: (node[1], 1)).reduceByKey(add)
+top_ten_in = followers.takeOrdered(10, lambda x: -x[1])
 
-# TODO: return only top ten (topByKey?)
+following = rdd.map(lambda node: (node[0], 1)).reduceByKey(add)
+top_ten_out = following.takeOrdered(10, lambda x: -x[1])
 
-most_in = users_lines_rdd.map(lambda node: (node[1], 1)).reduceByKey(add)
-top_ten_in = most_in.takeOrdered(10, lambda x: -x[1])
+# b)
+# ==============================================
+# Mean
+avg_in = float(rdd.count())/followers.count() #tot conections/users with connections "in"
+avg_out = float(rdd.count())/following.count()
 
-most_out = users_lines_rdd.map(lambda node: (node[0], 1)).reduceByKey(add)
-top_ten_out = most_out.takeOrdered(10, lambda x: -x[1])
+# Median
+followers_values = followers.map(lambda v: (v[1]))              # Map the column we're using for the median
+followers_array = np.array(followers_values.collect())          # Convert to numpy array
+followers_median = np.median(followers_array.astype(np.float))  # Find median
 
-# b) TODO: find mean and median of users in and out
-
-# FIND MEAN
-
-avg_in = float(users_lines_rdd.count())/most_in.count() #tot conections/users with connections "in"
-avg_out = float(users_lines_rdd.count())/most_out.count()
-
-# FIND MEDIAN
-
-
-
-
-
-
-
+following_values = following.map(lambda v: (v[1]))              # Map the column we're using for the median
+following_array = np.array(following_values.collect())          # Convert to numpy array
+following_median = np.median(following_array.astype(np.float))  # Find median
