@@ -1,4 +1,4 @@
-#Big Data Project - Yelp Files
+# Big Data Project - Yelp Files
 
 To run the scripts:
 
