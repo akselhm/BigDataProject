@@ -34,15 +34,12 @@ average_characters_per_review = characters_and_reviews_count[0] / characters_and
 most_reviews = reviewers_lines_rdd.map(lambda node: (node[2], 1)).reduceByKey(add)
 top_ten_reviews = most_reviews.takeOrdered(10, key=lambda x: -x[1])
 
-
 # d) reviews per year
 # ==============================================
 per_year = reviewers_lines_rdd.map(lambda year: (datetime.datetime.fromtimestamp(float(year[4])).year, 1)).reduceByKey(add).sortByKey()
 
-
 #  e)
 # ==============================================
-
 first_date = reviewers_lines_rdd.map(lambda time: time[4]).reduce(lambda date1, date2: date1 if date1 < date2 else date2)
 fd = datetime.datetime.fromtimestamp(float(first_date))
 
@@ -60,7 +57,6 @@ per_user = reviewers_lines_rdd.map(lambda user: (user[1], 1)).reduceByKey(add).s
 chars_per_user = reviewers_lines_rdd.map(lambda user: (user[1], len(user[3]))).reduceByKey(add).sortByKey()
 
 ###### TODO: find avg chars per review for a user, and compute PCC
-
 
 # print("dt_object =", dt_object)
 # print("type(dt_object) =", type(dt_object)))
