@@ -4,9 +4,11 @@ import datetime
 from operator import add
 import numpy as np
 
+# Configure Spark
 sparkConf = SparkConf().setAppName("Yelp").setMaster("local")
 sc = SparkContext(conf=sparkConf)
 
+# Set data folder, inputs and output
 folder_name = "./data/"
 input_reviewers = "yelp_top_reviewers_with_reviews.csv.gz"
 output_file = "result2.tsv"

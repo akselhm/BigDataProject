@@ -11,7 +11,7 @@ input_reviewers = "yelp_top_reviewers_with_reviews.csv.gz"
 input_users = "yelp_top_users_friendship_graph.csv.gz"
 output_file = "result1.tsv"
 
-# Set data folder, inputs and output
+# Load into 3 separate RDDs
 businessesRDD = sc.textFile(folder_name + input_businesses)
 reviewersRDD = sc.textFile(folder_name + input_reviewers)
 usersRDD = sc.textFile(folder_name + input_users)
