@@ -21,7 +21,6 @@ businesses_number_of_records = businessesRDD.count()
 reviewers_number_of_records = reviewersRDD.count()
 users_number_of_records = usersRDD.count()
 
-f = open(folder_name + output_file, 'w')
-f.write("Businesses: " + str(businesses_number_of_records) + "\n\n")
-f.write("Reviewers: " + str(reviewers_number_of_records) + "\n\n")
-f.write("Users: " + str(users_number_of_records) + "\n\n")
+lines = [businesses_number_of_records, reviewers_number_of_records, users_number_of_records]
+lines_rdd = sc.parallelize(lines)
+lines_rdd.repartition(1).saveAsTextFile(folder_name + output_file)

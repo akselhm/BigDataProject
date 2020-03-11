@@ -21,7 +21,6 @@ rdd = reviewersRDD.map(lambda line: line.split('\t'))
 header = rdd.first()
 rdd = rdd.filter(lambda line: line != header)
 
-"""
 # a) Number of distinct users
 # ==============================================
 distinct_users = rdd.map(lambda fields: fields[1]).distinct()
@@ -55,26 +54,20 @@ ld = datetime.datetime.fromtimestamp(float(last_date))
 # ==============================================
 
 # Key: (userId) Value: (tot. chars for user, tot. reviews for user (X_i))
-
 tot_chars_and_reviews = rdd.map(lambda user: [user[1], (len(base64.b64decode(user[3])), 1)]).reduceByKey(
     lambda (length_1, count_1), (length_2, count_2): (float(length_1) + float(length_2), count_1 + count_2))
-
-# Key: (userId) Value: (Y_i, X_i)
-avg_chars_and_reviews = tot_chars_and_reviews.mapValues(lambda v: [(v[0] / float(v[1])), v[1]])
+# Key: (userId) Value: (X_i, Y_i)
+avg_chars_and_reviews = tot_chars_and_reviews.mapValues(lambda v: [v[1], (v[0] / float(v[1]))])
 
 x = avg_chars_and_reviews.map(lambda user: [user[0], user[1][0]])
-y = tot_chars_and_reviews.map(lambda user: [user[0], user[1][1]])
+y = avg_chars_and_reviews.map(lambda user: [user[0], user[1][1]])
 
 tot_X = x.values().sum()
 tot_Y = y.values().sum()
 
 # mean Y and X
-mean_X = tot_X / (avg_chars_and_reviews.count()*10)
-
-
+mean_X = tot_X / avg_chars_and_reviews.count()
 mean_Y = tot_Y / avg_chars_and_reviews.count()
-
-print avg_chars_and_reviews.take(20)
 
 pcc = avg_chars_and_reviews.map(lambda user: [user[1][0], user[1][1]])
 
@@ -92,9 +85,7 @@ print pcc_numerator
 print pcc_denominator_1
 print pcc_denominator_2
 """
-# print("dt_object =", dt_object)
-# print("type(dt_object) =", type(dt_object)))
-lines = [distinct_users_count, average_characters_per_review, top_ten_reviews, per_year, fd, ld]
+
+lines = [distinct_users_count, average_characters_per_review, top_ten_reviews, per_year.collect(), fd, ld]
 lines_rdd = sc.parallelize(lines)
 lines_rdd.repartition(1).saveAsTextFile(folder_name + output_file)
-"""

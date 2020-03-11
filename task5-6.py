@@ -17,7 +17,7 @@ folder_name = "./data/"
 input_businesses = "yelp_businesses.csv.gz"
 input_reviewers = "yelp_top_reviewers_with_reviews.csv.gz"
 input_users = "yelp_top_users_friendship_graph.csv.gz"
-output_file = "result5.tsv"
+output_file = "result6.tsv"
 
 
 # Task 5: Load into 3 separate dataframes
@@ -48,7 +48,6 @@ df_users = load_dataframe(input_users, ",")             # Load users into datafr
 # a) Inner join review table and business table
 # ===============================================
 inner_join = df_reviewers.join(df_businesses, df_reviewers[2] == df_businesses[0], 'inner')
-inner_join.show()
 
 # b) Save the new table in a temporary table
 # ===============================================
@@ -56,4 +55,10 @@ inner_join.createOrReplaceTempView("innerJoinBusinessesAndReviewers")
 
 # c) Number of reviews for each user in the review table
 # =======================================================
+reviews_per_user = df_reviewers.groupBy(df_reviewers[1]).count()
+reviews_per_user = reviews_per_user.orderBy(reviews_per_user[1].desc())
+reviews_per_user = reviews_per_user.limit(20).collect()
 
+lines = [reviews_per_user]
+lines_rdd = sc.parallelize(lines)
+lines_rdd.repartition(1).saveAsTextFile(folder_name + output_file)

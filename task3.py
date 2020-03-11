@@ -39,6 +39,6 @@ geographical_centroid = region_with_coordinates.reduceByKey(
     lambda a, b: (float(a[0]) + float(b[0]), float(a[1]) + float(b[1]), a[2] + b[2])).mapValues(
     lambda v: (float(v[0]) / float(v[2]), float(v[1]) / float(v[2])))
 
-print geographical_centroid.collect()
-
-# rdd.saveAsTextFile(folder_name + output_file)
+lines = [city_and_rating.collect(), top_ten_categories, geographical_centroid.collect()]
+lines_rdd = sc.parallelize(lines)
+lines_rdd.repartition(1).saveAsTextFile(folder_name + output_file)
